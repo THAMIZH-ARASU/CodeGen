@@ -1,0 +1,7 @@
+
+[project]
+name = "AgenticCodeGenerator"
+version = "0.1.0"
+description = "A system that generates complete multi-module projects from a single high-level prompt."
+authors = [{name = "Gemini", email = "gemini@google.com"}]
+requires-python = ">=3.8"

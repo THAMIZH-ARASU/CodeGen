@@ -1,0 +1,193 @@
+Iteration 0 – System Scoping & Architecture
+Goal: Define the architecture, roles, and high-level design before coding.
+Prompt:{
+You are a senior software architect.  
+I want to build a system like Blitzy that generates complete multi-module projects from a single high-level prompt using LLMs, RAG, and multi-agent orchestration.  
+TASK:  
+1. Define the overall system architecture (components, data flow, dependencies).  
+2. List all required subsystems (orchestrator, agents, RAG, repo manager, test runner, security scanners, deployment).  
+3. Define software engineering principles (SOLID, DRY, KISS, modularity).  
+4. Suggest suitable Python frameworks/libraries for each subsystem.  
+5. Output the design in a structured way (markdown + diagrams if possible).  
+Constraints: Output must be structured, professional, and suitable as a project blueprint.
+}
+===================================================================================================================================================
+Iteration 1 – Project Setup
+Goal: Create the repo skeleton in Python.
+Prompt:{
+You are a Python backend engineer.  
+Based on the previously defined architecture, generate a Python project scaffold with the following structure:  
+- `src/orchestrator/`  
+- `src/agents/` (architect_agent.py, code_generator.py, tester.py, etc.)  
+- `src/rag/` (indexer.py, retriever.py)  
+- `src/repo_manager/`  
+- `src/sandbox/`  
+- `tests/`  
+- `config/`  
+Requirements:  
+1. Use `poetry` or `pip-tools` for dependency management.  
+2. Include logging setup (structured logs).  
+3. Add a config loader (YAML or TOML).  
+4. Provide a `README.md` with project setup instructions.  
+Output: Python code files and folder structure with boilerplate implementations.
+}
+===================================================================================================================================================
+Iteration 2 – Orchestrator & Workflow Engine
+Goal: Build the orchestration layer (manages task DAGs, retries, states).
+Prompt:{
+You are implementing the orchestrator for the AI code generation system in Python.  
+TASK:  
+1. Implement a workflow manager using `asyncio` (or `Prefect/Temporal SDK`).  
+2. The orchestrator must:  
+   - Accept a `ProjectManifest` JSON.  
+   - Schedule tasks (e.g., call ArchitectAgent → CodeGenAgent → TesterAgent).  
+   - Handle retries and error logging.  
+   - Save state to a local SQLite DB.  
+3. Output the orchestrator code in `src/orchestrator/orchestrator.py`.  
+4. Include an example DAG run with 3 tasks (plan → generate → test).  
+Constraints:  
+- Code must be modular and extensible.  
+- Add docstrings and type hints.  
+}
+===================================================================================================================================================
+Iteration 3 – Agent Framework
+Goal: Standardize how LLM-powered agents reason & act.
+Prompt:{
+You are designing a Python agent framework.  
+TASK:  
+1. Implement an abstract `BaseAgent` class in `src/agents/base_agent.py`.  
+   - Methods: `reason()`, `act()`, `run()`.  
+   - Enforce JSON I/O contract.  
+   - Include logging and error handling.  
+2. Implement an example `ArchitectAgent` that takes a high-level prompt and produces a project manifest (JSON).  
+3. Show how the orchestrator can call this agent and log its outputs.  
+Constraints:  
+- Use dependency injection where possible.  
+- Follow Strategy design pattern for model backends (e.g., OpenAI, local LLM).  
+- Provide one working example flow.
+}
+===================================================================================================================================================
+Iteration 4 – Retrieval-Augmented Generation (RAG)
+Goal: Add context retrieval from a knowledge base.
+Prompt:{
+You are building the RAG subsystem in Python.  
+TASK:  
+1. Implement `Indexer` to ingest documents (split into chunks, embed, and store in a vector DB).  
+2. Implement `Retriever` that queries vector DB and reranks results.  
+3. Show integration with `ArchitectAgent` and `CodeGenAgent` (agents must accept retrieved context).  
+4. Use `faiss` or `chromadb` for vector storage.  
+5. Output code in `src/rag/indexer.py` and `src/rag/retriever.py`.  
+Constraints:  
+- Use `sentence-transformers` or `openai embeddings`.  
+- Ensure metadata (source, license, timestamp) is stored with each chunk.  
+- Add a test script that indexes Python docs and retrieves relevant code snippets.
+}
+===================================================================================================================================================
+Iteration 5 – Code Generation & Repo Manager
+Goal: Generate and store code in a Git repo.
+Prompt:{
+You are building the CodeGenAgent and RepoManager in Python.  
+TASK:  
+1. Implement `CodeGenAgent` that takes a module spec and produces code files.  
+2. Implement `RepoManager` that:  
+   - Initializes a Git repo.  
+   - Commits files from agents.  
+   - Tracks provenance (prompt, model, timestamp).  
+3. Use `pygit2` or system `git` for repo management.  
+4. Example flow: ArchitectAgent → CodeGenAgent → RepoManager → commit → show repo tree.  
+Constraints:  
+- Ensure commits are atomic.  
+- Generate semantic commit messages.  
+- Include provenance metadata in commit messages.  
+}
+===================================================================================================================================================
+Iteration 6 – Sandbox & Testing
+Goal: Add automated testing in an isolated environment.
+Prompt:{
+You are implementing a sandbox runner for testing generated code.  
+TASK:  
+1. Implement `SandboxRunner` that runs builds/tests in Docker containers.  
+2. Add support for:  
+   - Running `pytest` or `unittest`.  
+   - Capturing logs and exit codes.  
+   - Enforcing CPU/memory limits.  
+3. Integrate with `TesterAgent` which:  
+   - Reads test results.  
+   - Summarizes failures.  
+   - Suggests fixes.  
+Output: Python code for `src/sandbox/sandbox_runner.py` and `src/agents/tester_agent.py`.  
+Include an example test cycle.
+}
+===================================================================================================================================================
+Iteration 7 – Security & Compliance
+Goal: Add static analysis, license, and vulnerability scanning.
+Prompt:{
+You are implementing the security layer.  
+TASK:  
+1. Implement `SecurityAgent` that runs:  
+   - Static analysis (bandit, semgrep).  
+   - Dependency vulnerability check (pip-audit).  
+   - License detection.  
+2. The agent must output a JSON report with severity levels.  
+3. If severity=high, block auto-merge and require human review.  
+Constraints:  
+- Integrate with orchestrator workflow.  
+- Provide an example report.  
+}
+===================================================================================================================================================
+Iteration 8 – Multi-Agent Orchestration
+Goal: Scale the system with multiple agents working in parallel.
+Prompt:{
+You are upgrading the orchestrator to support multi-agent workflows.  
+TASK:  
+1. Convert orchestrator to manage a DAG of agents.  
+2. Implement dependency tracking (e.g., auth → api → frontend).  
+3. Allow parallel execution of independent tasks with asyncio.  
+4. Add a retry policy for failed tasks.  
+Provide Python code in `src/orchestrator/orchestrator.py` with an example 5-agent workflow.
+}
+===================================================================================================================================================
+Iteration 9 – CI/CD & Deployment
+Goal: Enable auto-deployment of generated projects.
+Prompt:{
+You are building deployment automation for generated projects.  
+TASK:  
+1. Implement `DeploymentAgent` that generates:  
+   - Dockerfile.  
+   - Kubernetes manifests.  
+   - Terraform IaC for cloud deployment.  
+2. Integrate CI/CD pipeline:  
+   - GitHub Actions config generator.  
+   - Run tests → build → deploy to staging.  
+Output: Python code for `src/agents/deployment_agent.py` and example YAML configs.
+}
+===================================================================================================================================================
+Iteration 10 – Human-in-Loop & Review UI
+Goal: Add human review and approval flow.
+Prompt:{
+You are building the human-in-the-loop system.  
+TASK:  
+1. Implement a review API (Flask/FastAPI) that shows generated diffs, risk flags, and provenance.  
+2. Add endpoints:  
+   - `/review/list` → list pending reviews.  
+   - `/review/approve` → approve merge.  
+   - `/review/reject` → send feedback to fixer agent.  
+3. Integrate this API with orchestrator to pause workflows until review.  
+Constraints:  
+- Use FastAPI.  
+- Provide Swagger/OpenAPI schema.  
+- Example frontend JSON output for one PR review.
+}
+===================================================================================================================================================
+Iteration 11+ – Scaling & Continuous Improvement
+Goal: Optimize and iterate.
+Prompt (example for scaling):{
+You are optimizing the system for scale.
+TASK:  
+1. Add Kafka-based task queue for orchestrator.  
+2. Implement worker pool scaling on Kubernetes.  
+3. Add monitoring with Prometheus + Grafana.  
+4. Show how to measure throughput, latency, and success rate.  
+Output: Python code + Helm charts for deployment.  
+}
+===================================================================================================================================================

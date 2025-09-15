@@ -1,0 +1,13 @@
+
+pip-tools
+pyyaml
+structlog
+chromadb
+sentence-transformers
+docker
+bandit
+semgrep
+pip-audit
+fastapi
+uvicorn
+prometheus-client
