@@ -1,4 +1,4 @@
-# AgenticCodeGenerator
+# CodeGen - Agentic Code Generator
 
 A system that generates complete multi-module projects from a single high-level prompt.
 
