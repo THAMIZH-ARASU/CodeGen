@@ -4,20 +4,20 @@
 #
 #    pip-compile requirements.in
 #
-click==8.1.7
-    # via pip-tools
-pip-tools==7.0.0
-pyyaml==6.0.1
-structlog==24.1.0
-chromadb==0.4.24
-sentence-transformers==2.6.1
-docker==7.0.0
-bandit==1.7.8
-semgrep==1.69.0
-pip-audit==2.7.2
-fastapi==0.110.0
-uvicorn==0.29.0
-prometheus-client==0.20.0
+click
+# via pip-tools
+pip-tools
+pyyaml
+structlog
+chromadb
+sentence-transformers
+docker
+bandit
+semgrep
+pip-audit
+fastapi
+uvicorn
+prometheus-client
 # Dependencies for chromadb and sentence-transformers
 transformers
 torch
